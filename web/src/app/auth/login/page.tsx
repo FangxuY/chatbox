@@ -78,7 +78,7 @@ const Page = async ({
             <Image src="/logo.png" alt="Logo" width="1419" height="1520" />
           </div>
           <h2 className="text-center text-xl font-bold mt-4">
-            Log In to Danswer
+            Log In to ChatBot Demo
           </h2>
           {authUrl && authTypeMetadata && (
             <SignInButton

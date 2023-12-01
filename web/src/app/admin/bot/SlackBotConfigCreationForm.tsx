@@ -92,8 +92,8 @@ export const SlackBotCreationForm = ({
               if (response.ok) {
                 setPopup({
                   message: isUpdate
-                    ? "Successfully updated DanswerBot config!"
-                    : "Successfully created DanswerBot config!",
+                    ? "Successfully update ChatBot config!"
+                    : "Successfully created ChatBot config!",
                   type: "success",
                 });
                 onClose();
@@ -102,8 +102,8 @@ export const SlackBotCreationForm = ({
                 const errorMsg = responseJson.detail || responseJson.message;
                 setPopup({
                   message: isUpdate
-                    ? `Error updating DanswerBot config - ${errorMsg}`
-                    : `Error creating DanswerBot config - ${errorMsg}`,
+                    ? `Error updating ChatBot config - ${errorMsg}`
+                    : `Error creating ChatBot config - ${errorMsg}`,
                   type: "error",
                 });
               }
@@ -113,8 +113,8 @@ export const SlackBotCreationForm = ({
               <Form>
                 <h2 className="text-xl font-bold mb-3 border-b border-gray-600 pt-4 pb-3 bg-gray-700 px-6">
                   {isUpdate
-                    ? "Update a DanswerBot Config"
-                    : "Create a new DanswerBot Config"}
+                    ? "Update a ChatBot Config"
+                    : "Create a new ChatBot Config"}
                 </h2>
                 <div className="px-6 pb-6">
                   <TextArrayField
@@ -128,7 +128,7 @@ export const SlackBotCreationForm = ({
                         &apos;#ask-danswer&apos;.
                         <br />
                         <br />
-                        <i>NOTE</i>: you still need to add DanswerBot to the
+                        <i>NOTE</i>: you still need to add ChatBot to the
                         channel(s) in Slack itself. Setting this config will not
                         auto-add the bot to the channel.
                       </div>
@@ -149,18 +149,18 @@ export const SlackBotCreationForm = ({
                   <div className="border-t border-gray-600 py-2" />
                   <BooleanFormField
                     name="respond_tag_only"
-                    label="Respond to @DanswerBot Only"
-                    subtext="If set, DanswerBot will only respond when directly tagged"
+                    label="Respond to @ChatBot Only"
+                    subtext="If set, ChatBot will only respond when directly tagged"
                   />
                   <div className="border-t border-gray-600 py-2" />
                   <TextArrayField
                     name="respond_team_member_list"
                     label="Team Members Emails:"
-                    subtext={`If specified, DanswerBot responses will only be 
+                    subtext={`If specified, ChatBot responses will only be 
                   visible to members in this list. This is
-                  useful if you want DanswerBot to operate in an
+                  useful if you want ChatBot to operate in an
                   "assistant" mode, where it helps the team members find
-                  answers, but let's them build on top of DanswerBot's response / throw 
+                  answers, but let's them build on top of ChatBot's response / throw 
                   out the occasional incorrect answer.`}
                     values={values}
                   />
@@ -172,8 +172,8 @@ export const SlackBotCreationForm = ({
                         <div>
                           <p className="font-medium">Document Sets:</p>
                           <div className="text-xs">
-                            The document sets that DanswerBot should search
-                            through. If left blank, DanswerBot will search
+                            The document sets that ChatBot should search
+                            through. If left blank, ChatBot will search
                             through all documents.
                           </div>
                         </div>

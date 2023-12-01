@@ -77,7 +77,7 @@ const Main = () => {
       {popup}
       <p className="text-sm">
         This connector allows you to sync all your Gong Transcripts into
-        Danswer. More details on how to setup the Gong connector can be found in{" "}
+        Chatbot. More details on how to setup the Gong connector can be found in{" "}
         <a
           className="text-blue-500"
           href="https://docs.danswer.dev/connectors/gong"

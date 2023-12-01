@@ -363,7 +363,7 @@ const Main = () => {
       />
 
       <h2 className="font-bold mb-2 mt-6 ml-auto mr-auto">
-        Step 2: Authenticate with Danswer
+        Step 2: Authenticate with Chatbot
       </h2>
       <DriveOAuthSection
         setPopup={setPopup}

@@ -271,10 +271,10 @@ const Main = () => {
       {slackBotTokens && (
         <>
           <h2 className="text-lg font-bold mb-2 mt-4">
-            Step 2: Setup DanswerBot
+            Step 2: Setup ChatBot
           </h2>
           <div className="text-sm mb-3">
-            Configure Danswer to automatically answer questions in Slack
+            Configure Chatbot to automatically answer questions in Slack
             channels.
           </div>
 
