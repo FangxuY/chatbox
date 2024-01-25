@@ -2,6 +2,25 @@ import { Quote } from "@/lib/search/interfaces";
 import { ResponseSection, StatusOptions } from "./ResponseSection";
 import ReactMarkdown from "react-markdown";
 
+const TEMP_STRING = "__$%^TEMP$%^__";
+
+function replaceNewlines(answer: string) {
+  // Since the one-shot answer is a JSON, GPT adds extra backslashes to the
+  // newlines. This function replaces the extra backslashes with the correct
+  // number of backslashes so that ReactMarkdown can render the newlines
+
+  // Step 1: Replace '\\\\n' with a temporary placeholder
+  answer = answer.replace(/\\\\n/g, TEMP_STRING);
+
+  // Step 2: Replace '\\n' with '\n'
+  answer = answer.replace(/\\n/g, "\n");
+
+  // Step 3: Replace the temporary placeholder with '\\n'
+  answer = answer.replace(TEMP_STRING, "\\n");
+
+  return answer;
+}
+
 interface AnswerSectionProps {
   answer: string | null;
   quotes: Quote[] | null;
@@ -35,17 +54,17 @@ const AnswerBody = ({ answer, error, isFetching }: AnswerSectionProps) => {
   if (error) {
     return (
       <div className="flex">
-        <div className="text-red-500 my-auto ml-1">{error}</div>
+        <div className="text-error my-auto ml-1">{error}</div>
       </div>
     );
   } else if (answer) {
     return (
-      <ReactMarkdown className="prose prose-invert text-gray-100 text-sm max-w-full">
-        {answer.replaceAll("\\n", "\n")}
+      <ReactMarkdown className="prose text-sm max-w-full">
+        {replaceNewlines(answer)}
       </ReactMarkdown>
     );
   } else if (!isFetching) {
-    return <div className="text-gray-300">Information not found</div>;
+    return <div>Information not found</div>;
   }
 
   return null;
@@ -66,14 +85,14 @@ export const AnswerSection = (props: AnswerSectionProps) => {
       status={status}
       header={
         <div className="flex">
-          <div className="ml-2">{<AnswerHeader {...props} />}</div>
+          <div className="ml-2 text-strong">{<AnswerHeader {...props} />}</div>
         </div>
       }
       body={
         <div className="">
           <AnswerBody {...props} />
           {props.nonAnswerableReason && !props.isFetching && (
-            <div className="text-gray-300 mt-4 text-sm">
+            <div className="mt-4 text-sm">
               <b className="font-medium">Warning:</b> the AI did not think this
               question was answerable.{" "}
               <div className="italic mt-1 ml-2">

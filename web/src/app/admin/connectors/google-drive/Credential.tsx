@@ -15,6 +15,7 @@ import { GOOGLE_DRIVE_AUTH_IS_ADMIN_COOKIE_NAME } from "@/lib/constants";
 import Cookies from "js-cookie";
 import { TextFormField } from "@/components/admin/connectors/Field";
 import { Form, Formik } from "formik";
+import { Card } from "@tremor/react";
 
 type GoogleDriveCredentialJsonTypes = "authorized_user" | "service_account";
 
@@ -246,7 +247,7 @@ export const DriveJsonUploadSection = ({
       <p className="text-sm mb-2">
         Follow the guide{" "}
         <a
-          className="text-blue-500"
+          className="text-link"
           target="_blank"
           href="https://docs.danswer.dev/connectors/google_drive#authorization"
         >
@@ -271,6 +272,7 @@ interface DriveCredentialSectionProps {
   appCredentialData?: { client_id: string };
   setPopup: (popupSpec: PopupSpec | null) => void;
   refreshCredentials: () => void;
+  connectorExists: boolean;
 }
 
 export const DriveOAuthSection = ({
@@ -280,6 +282,7 @@ export const DriveOAuthSection = ({
   appCredentialData,
   setPopup,
   refreshCredentials,
+  connectorExists,
 }: DriveCredentialSectionProps) => {
   const router = useRouter();
 
@@ -293,6 +296,14 @@ export const DriveOAuthSection = ({
         </p>
         <Button
           onClick={async () => {
+            if (connectorExists) {
+              setPopup({
+                message:
+                  "Cannot revoke access to Google Drive while any connector is still setup. Please delete all connectors, then try again.",
+                type: "error",
+              });
+              return;
+            }
             await adminDeleteCredential(existingCredential.id);
             setPopup({
               message: "Successfully revoked access to Google Drive!",
@@ -322,7 +333,7 @@ export const DriveOAuthSection = ({
           the documents you want to index with the service account.
         </p>
 
-        <div className="border-solid border-gray-600 border rounded-md p-6 mt-2 mb-4">
+        <Card>
           <Formik
             initialValues={{
               google_drive_delegated_user: "",
@@ -385,7 +396,7 @@ export const DriveOAuthSection = ({
               </Form>
             )}
           </Formik>
-        </div>
+        </Card>
       </div>
     );
   }

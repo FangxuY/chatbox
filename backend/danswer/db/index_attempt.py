@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 
 from danswer.db.models import IndexAttempt
 from danswer.db.models import IndexingStatus
-from danswer.server.models import ConnectorCredentialPairIdentifier
+from danswer.server.documents.models import ConnectorCredentialPairIdentifier
 from danswer.utils.logger import setup_logger
 from danswer.utils.telemetry import optional_telemetry
 from danswer.utils.telemetry import RecordType
@@ -166,20 +166,24 @@ def get_latest_index_attempts(
 
 
 def get_index_attempts_for_cc_pair(
-    db_session: Session, cc_pair_identifier: ConnectorCredentialPairIdentifier
+    db_session: Session,
+    cc_pair_identifier: ConnectorCredentialPairIdentifier,
+    disinclude_finished: bool = False,
 ) -> Sequence[IndexAttempt]:
-    stmt = (
-        select(IndexAttempt)
-        .where(
-            and_(
-                IndexAttempt.connector_id == cc_pair_identifier.connector_id,
-                IndexAttempt.credential_id == cc_pair_identifier.credential_id,
-            )
-        )
-        .order_by(
-            IndexAttempt.time_created.desc(),
+    stmt = select(IndexAttempt).where(
+        and_(
+            IndexAttempt.connector_id == cc_pair_identifier.connector_id,
+            IndexAttempt.credential_id == cc_pair_identifier.credential_id,
         )
     )
+    if disinclude_finished:
+        stmt = stmt.where(
+            IndexAttempt.status.in_(
+                [IndexingStatus.NOT_STARTED, IndexingStatus.IN_PROGRESS]
+            )
+        )
+
+    stmt = stmt.order_by(IndexAttempt.time_created.desc())
     return db_session.execute(stmt).scalars().all()
 
 

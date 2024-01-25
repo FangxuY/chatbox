@@ -1,11 +1,11 @@
 """Experimental functionality related to splitting up indexing
-into a series of checkpoints to better handle intermmittent failures
+into a series of checkpoints to better handle intermittent failures
 / jobs being killed by cloud providers."""
 import datetime
 
 from danswer.configs.app_configs import EXPERIMENTAL_CHECKPOINTING_ENABLED
 from danswer.configs.constants import DocumentSource
-from danswer.connectors.cross_connector_utils.time_utils import datetime_to_utc
+from danswer.connectors.cross_connector_utils.miscellaneous_utils import datetime_to_utc
 
 
 def _2010_dt() -> datetime.datetime:
@@ -40,8 +40,13 @@ def _default_end_time(
 
 
 def find_end_time_for_indexing_attempt(
-    last_successful_run: datetime.datetime | None, source_type: DocumentSource
+    last_successful_run: datetime.datetime | None,
+    # source_type can be used to override the default for certain connectors, currently unused
+    source_type: DocumentSource,
 ) -> datetime.datetime | None:
+    """Is the current time unless the connector is run over a large period, in which case it is
+    split up into large time segments that become smaller as it approaches the present
+    """
     # NOTE: source_type can be used to override the default for certain connectors
     end_of_window = _default_end_time(last_successful_run)
     now = datetime.datetime.now(tz=datetime.timezone.utc)

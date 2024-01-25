@@ -61,8 +61,7 @@ export function IndexAttemptStatus({
     );
   }
 
-  // TODO: remove wrapping `dark` once we have light/dark mode
-  return <div className="dark">{badge}</div>;
+  return <div>{badge}</div>;
 }
 
 export function CCPairStatus({
@@ -87,7 +86,7 @@ export function CCPairStatus({
   } else if (disabled) {
     badge = (
       <Badge size={size} color="yellow" icon={FiPauseCircle}>
-        Disabled
+        Paused
       </Badge>
     );
   } else if (status === "failed") {
@@ -104,6 +103,5 @@ export function CCPairStatus({
     );
   }
 
-  // TODO: remove wrapping `dark` once we have light/dark mode
-  return <div className="dark">{badge}</div>;
+  return <div>{badge}</div>;
 }

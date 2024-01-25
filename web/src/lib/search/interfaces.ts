@@ -1,5 +1,6 @@
 import { DateRangePickerValue } from "@tremor/react";
-import { ValidSources } from "../types";
+import { Tag, ValidSources } from "../types";
+import { Persona } from "@/app/admin/personas/interfaces";
 
 export const FlowType = {
   SEARCH: "search",
@@ -44,7 +45,9 @@ export interface DanswerDocument {
   hidden: boolean;
   score: number;
   match_highlights: string[];
+  metadata: { [key: string]: string };
   updated_at: string | null;
+  db_doc_id?: number;
 }
 
 export interface DocumentInfoPacket {
@@ -74,9 +77,18 @@ export interface SearchResponse {
   queryEventId: number | null;
 }
 
-export interface Source {
+export enum SourceCategory {
+  AppConnection = "Connect to Apps",
+  ImportedKnowledge = "Import Knowledge",
+}
+
+export interface SourceMetadata {
+  icon: React.FC<{ size?: number; className?: string }>;
   displayName: string;
+  category: SourceCategory;
+  shortDescription?: string;
   internalName: ValidSources;
+  adminUrl: string;
 }
 
 export interface SearchDefaultOverrides {
@@ -92,10 +104,11 @@ export interface Filters {
 
 export interface SearchRequestArgs {
   query: string;
-  chatSessionId: number;
-  sources: Source[];
+  sources: SourceMetadata[];
   documentSets: string[];
   timeRange: DateRangePickerValue | null;
+  tags: Tag[];
+  persona: Persona;
   updateCurrentAnswer: (val: string) => void;
   updateQuotes: (quotes: Quote[]) => void;
   updateDocs: (documents: DanswerDocument[]) => void;
@@ -105,7 +118,6 @@ export interface SearchRequestArgs {
   updateError: (error: string) => void;
   updateQueryEventId: (queryEventID: number) => void;
   selectedSearchType: SearchType | null;
-  offset: number | null;
 }
 
 export interface SearchRequestOverrides {

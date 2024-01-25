@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from dataclasses import fields
 from datetime import datetime
-from typing import Any
 
 from danswer.access.models import DocumentAccess
+from danswer.configs.constants import DocumentSource
 from danswer.connectors.models import Document
 from danswer.utils.logger import setup_logger
 
@@ -47,6 +47,7 @@ class DocAwareChunk(BaseChunk):
 @dataclass
 class IndexChunk(DocAwareChunk):
     embeddings: ChunkEmbedding
+    title_embedding: Embedding | None
 
 
 @dataclass
@@ -58,14 +59,21 @@ class DocMetadataAwareIndexChunk(IndexChunk):
             source document for this chunk.
     document_sets: all document sets the source document for this chunk is a part
                    of. This is used for filtering / personas.
+    boost: influences the ranking of this chunk at query time. Positive -> ranked higher,
+           negative -> ranked lower.
     """
 
     access: "DocumentAccess"
     document_sets: set[str]
+    boost: int
 
     @classmethod
     def from_index_chunk(
-        cls, index_chunk: IndexChunk, access: "DocumentAccess", document_sets: set[str]
+        cls,
+        index_chunk: IndexChunk,
+        access: "DocumentAccess",
+        document_sets: set[str],
+        boost: int,
     ) -> "DocMetadataAwareIndexChunk":
         return cls(
             **{
@@ -74,19 +82,20 @@ class DocMetadataAwareIndexChunk(IndexChunk):
             },
             access=access,
             document_sets=document_sets,
+            boost=boost,
         )
 
 
 @dataclass
 class InferenceChunk(BaseChunk):
     document_id: str
-    source_type: str  # This is the string value of the enum already like "web"
+    source_type: DocumentSource
     semantic_identifier: str
     boost: int
     recency_bias: float
     score: float | None
     hidden: bool
-    metadata: dict[str, Any]
+    metadata: dict[str, str | list[str]]
     # Matched sections in the chunk. Uses Vespa syntax e.g. <hi>TEXT</hi>
     # to specify that a set of words should be highlighted. For example:
     # ["<hi>the</hi> <hi>answer</hi> is 42", "he couldn't find an <hi>answer</hi>"]

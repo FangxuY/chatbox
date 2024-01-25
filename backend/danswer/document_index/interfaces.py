@@ -4,6 +4,7 @@ from datetime import datetime
 from typing import Any
 
 from danswer.access.models import DocumentAccess
+from danswer.configs.model_configs import DOC_EMBEDDING_DIM
 from danswer.indexing.models import DocMetadataAwareIndexChunk
 from danswer.indexing.models import InferenceChunk
 from danswer.search.models import IndexFilters
@@ -50,7 +51,7 @@ class Verifiable(abc.ABC):
         self.index_name = index_name
 
     @abc.abstractmethod
-    def ensure_indices_exist(self) -> None:
+    def ensure_indices_exist(self, embedding_dim: int = DOC_EMBEDDING_DIM) -> None:
         raise NotImplementedError
 
 
@@ -77,14 +78,26 @@ class Updatable(abc.ABC):
         raise NotImplementedError
 
 
+class IdRetrievalCapable(abc.ABC):
+    @abc.abstractmethod
+    def id_based_retrieval(
+        self,
+        document_id: str,
+        chunk_ind: int | None,
+        filters: IndexFilters,
+    ) -> list[InferenceChunk]:
+        raise NotImplementedError
+
+
 class KeywordCapable(abc.ABC):
     @abc.abstractmethod
     def keyword_retrieval(
         self,
         query: str,
         filters: IndexFilters,
-        favor_recent: bool,
+        time_decay_multiplier: float,
         num_to_retrieve: int,
+        offset: int = 0,
     ) -> list[InferenceChunk]:
         raise NotImplementedError
 
@@ -95,8 +108,9 @@ class VectorCapable(abc.ABC):
         self,
         query: str,
         filters: IndexFilters,
-        favor_recent: bool,
+        time_decay_multiplier: float,
         num_to_retrieve: int,
+        offset: int = 0,
     ) -> list[InferenceChunk]:
         raise NotImplementedError
 
@@ -107,8 +121,9 @@ class HybridCapable(abc.ABC):
         self,
         query: str,
         filters: IndexFilters,
-        favor_recent: bool,
+        time_decay_multiplier: float,
         num_to_retrieve: int,
+        offset: int = 0,
         hybrid_alpha: float | None = None,
     ) -> list[InferenceChunk]:
         raise NotImplementedError
@@ -121,11 +136,20 @@ class AdminCapable(abc.ABC):
         query: str,
         filters: IndexFilters,
         num_to_retrieve: int,
+        offset: int = 0,
     ) -> list[InferenceChunk]:
         raise NotImplementedError
 
 
-class BaseIndex(Verifiable, AdminCapable, Indexable, Updatable, Deletable, abc.ABC):
+class BaseIndex(
+    Verifiable,
+    AdminCapable,
+    IdRetrievalCapable,
+    Indexable,
+    Updatable,
+    Deletable,
+    abc.ABC,
+):
     """All basic functionalities excluding a specific retrieval approach
     Indices need to be able to
     - Check that the index exists with a schema definition

@@ -9,6 +9,7 @@ from typing import IO
 
 import chardet
 from pypdf import PdfReader
+from pypdf.errors import PdfStreamError
 
 from danswer.utils.logger import setup_logger
 
@@ -37,29 +38,34 @@ def extract_metadata(line: str) -> dict | None:
 
 
 def read_pdf_file(file: IO[Any], file_name: str, pdf_pass: str | None = None) -> str:
-    pdf_reader = PdfReader(file)
-
-    # if marked as encrypted and a password is provided, try to decrypt
-    if pdf_reader.is_encrypted and pdf_pass is not None:
-        decrypt_success = False
-        if pdf_pass is not None:
-            try:
-                decrypt_success = pdf_reader.decrypt(pdf_pass) != 0
-            except Exception:
-                logger.error(f"Unable to decrypt pdf {file_name}")
-        else:
-            logger.info(f"No Password available to to decrypt pdf {file_name}")
-
-        if not decrypt_success:
-            # By user request, keep files that are unreadable just so they
-            # can be discoverable by title.
-            return ""
-
     try:
+        pdf_reader = PdfReader(file)
+
+        # If marked as encrypted and a password is provided, try to decrypt
+        if pdf_reader.is_encrypted and pdf_pass is not None:
+            decrypt_success = False
+            if pdf_pass is not None:
+                try:
+                    decrypt_success = pdf_reader.decrypt(pdf_pass) != 0
+                except Exception:
+                    logger.error(f"Unable to decrypt pdf {file_name}")
+            else:
+                logger.info(f"No Password available to to decrypt pdf {file_name}")
+
+            if not decrypt_success:
+                # By user request, keep files that are unreadable just so they
+                # can be discoverable by title.
+                return ""
+
         return "\n".join(page.extract_text() for page in pdf_reader.pages)
+    except PdfStreamError:
+        logger.exception(f"PDF file {file_name} is not a valid PDF")
     except Exception:
         logger.exception(f"Failed to read PDF {file_name}")
-        return ""
+
+    # File is still discoverable by title
+    # but the contents are not included as they cannot be parsed
+    return ""
 
 
 def is_macos_resource_fork_file(file_name: str) -> bool:
@@ -68,12 +74,29 @@ def is_macos_resource_fork_file(file_name: str) -> bool:
     )
 
 
+# To include additional metadata in the search index, add a .danswer_metadata.json file
+# to the zip file. This file should contain a list of objects with the following format:
+# [{ "filename": "file1.txt", "link": "https://example.com/file1.txt" }]
 def load_files_from_zip(
     zip_location: str | Path,
     ignore_macos_resource_fork_files: bool = True,
     ignore_dirs: bool = True,
-) -> Generator[tuple[zipfile.ZipInfo, IO[Any]], None, None]:
+) -> Generator[tuple[zipfile.ZipInfo, IO[Any], dict[str, Any]], None, None]:
     with zipfile.ZipFile(zip_location, "r") as zip_file:
+        zip_metadata = {}
+        try:
+            metadata_file_info = zip_file.getinfo(".danswer_metadata.json")
+            with zip_file.open(metadata_file_info, "r") as metadata_file:
+                try:
+                    zip_metadata = json.load(metadata_file)
+                    if isinstance(zip_metadata, list):
+                        # convert list of dicts to dict of dicts
+                        zip_metadata = {d["filename"]: d for d in zip_metadata}
+                except json.JSONDecodeError:
+                    logger.warn("Unable to load .danswer_metadata.json")
+        except KeyError:
+            logger.info("No .danswer_metadata.json file")
+
         for file_info in zip_file.infolist():
             with zip_file.open(file_info.filename, "r") as file:
                 if ignore_dirs and file_info.is_dir():
@@ -83,7 +106,7 @@ def load_files_from_zip(
                     file_info.filename
                 ):
                     continue
-                yield file_info, file
+                yield file_info, file, zip_metadata.get(file_info.filename, {})
 
 
 def detect_encoding(file_path: str | Path) -> str:

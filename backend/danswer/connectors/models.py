@@ -1,10 +1,10 @@
 from datetime import datetime
 from enum import Enum
-from typing import Any
 
 from pydantic import BaseModel
 
 from danswer.configs.constants import DocumentSource
+from danswer.configs.constants import INDEX_SEPARATOR
 from danswer.utils.text_processing import make_url_compatible
 
 
@@ -27,6 +27,22 @@ class Section(BaseModel):
     link: str | None
 
 
+class BasicExpertInfo(BaseModel):
+    """Basic Information for the owner of a document, any of the fields can be left as None
+    Display fallback goes as follows:
+    - first_name + (optional middle_initial) + last_name
+    - display_name
+    - email
+    - first_name
+    """
+
+    display_name: str | None = None
+    first_name: str | None = None
+    middle_initial: str | None = None
+    last_name: str | None = None
+    email: str | None = None
+
+
 class DocumentBase(BaseModel):
     """Used for Danswer ingestion api, the ID is inferred before use if not provided"""
 
@@ -34,20 +50,37 @@ class DocumentBase(BaseModel):
     sections: list[Section]
     source: DocumentSource | None = None
     semantic_identifier: str  # displayed in the UI as the main identifier for the doc
-    metadata: dict[str, Any]
+    metadata: dict[str, str | list[str]]
     # UTC time
     doc_updated_at: datetime | None = None
     # Owner, creator, etc.
-    primary_owners: list[str] | None = None
+    primary_owners: list[BasicExpertInfo] | None = None
     # Assignee, space owner, etc.
-    secondary_owners: list[str] | None = None
-    # `title` is used when computing best matches for a query
-    # if `None`, then we will use the `semantic_identifier` as the title in Vespa
+    secondary_owners: list[BasicExpertInfo] | None = None
+    # title is used for search whereas semantic_identifier is used for displaying in the UI
+    # different because Slack message may display as #general but general should not be part
+    # of the search, at least not in the same way as a document title should be for like Confluence
+    # The default title is semantic_identifier though unless otherwise specified
     title: str | None = None
     from_ingestion_api: bool = False
 
-    def get_title_for_document_index(self) -> str:
+    def get_title_for_document_index(self) -> str | None:
+        # If title is explicitly empty, return a None here for embedding purposes
+        if self.title == "":
+            return None
         return self.semantic_identifier if self.title is None else self.title
+
+    def get_metadata_str_attributes(self) -> list[str] | None:
+        if not self.metadata:
+            return None
+        # Combined string for the key/value for easy filtering
+        attributes: list[str] = []
+        for k, v in self.metadata.items():
+            if isinstance(v, list):
+                attributes.extend([k + INDEX_SEPARATOR + vi for vi in v])
+            else:
+                attributes.append(k + INDEX_SEPARATOR + v)
+        return attributes
 
 
 class Document(DocumentBase):

@@ -35,6 +35,7 @@ import {
   FiBookmark,
   FiCpu,
   FiInfo,
+  FiUploadCloud,
 } from "react-icons/fi";
 import { SiBookstack } from "react-icons/si";
 import Image from "next/image";
@@ -56,7 +57,8 @@ interface IconProps {
   className?: string;
 }
 
-export const defaultTailwindCSS = "my-auto flex flex-shrink-0 text-blue-400";
+export const defaultTailwindCSS = "my-auto flex flex-shrink-0 text-default";
+export const defaultTailwindCSSBlue = "my-auto flex flex-shrink-0 text-link";
 
 export const PlugIcon = ({
   size = 16,
@@ -130,14 +132,14 @@ export const XSquareIcon = ({
 
 export const GlobeIcon = ({
   size = 16,
-  className = defaultTailwindCSS,
+  className = defaultTailwindCSSBlue,
 }: IconProps) => {
   return <FiGlobe size={size} className={className} />;
 };
 
 export const FileIcon = ({
   size = 16,
-  className = defaultTailwindCSS,
+  className = defaultTailwindCSSBlue,
 }: IconProps) => {
   return <FiFile size={size} className={className} />;
 };
@@ -289,9 +291,30 @@ export const RobotIcon = ({
   return <FaRobot size={size} className={className} />;
 };
 
+export const ConnectorIcon = ({
+  size = 16,
+  className = defaultTailwindCSS,
+}: IconProps) => {
+  return <FiUploadCloud size={size} className={className} />;
+};
+
 //
 //  COMPANY LOGOS
 //
+
+export const LoopioIcon = ({
+  size = 16,
+  className = defaultTailwindCSS,
+}: IconProps) => {
+  return (
+    <div
+      style={{ width: `${size}px`, height: `${size}px` }}
+      className={`w-[${size}px] h-[${size}px] dark:invert ` + className}
+    >
+      <Image src="/Loopio.png" alt="Logo" width="96" height="96" />
+    </div>
+  );
+};
 
 export const SlackIcon = ({
   size = 16,
@@ -306,7 +329,19 @@ export const SlackIcon = ({
     </div>
   );
 };
-
+export const GitlabIcon = ({
+  size = 16,
+  className = defaultTailwindCSS,
+}: IconProps) => {
+  return (
+    <div
+      style={{ width: `${size}px`, height: `${size}px` }}
+      className={`w-[${size}px] h-[${size}px] ` + className}
+    >
+      <Image src="/Gitlab.png" alt="Logo" width="96" height="96" />
+    </div>
+  );
+};
 export const GithubIcon = ({
   size = 16,
   className = defaultTailwindCSS,
@@ -317,6 +352,20 @@ export const GithubIcon = ({
       className={`w-[${size}px] h-[${size}px] ` + className}
     >
       <Image src="/Github.png" alt="Logo" width="96" height="96" />
+    </div>
+  );
+};
+
+export const GmailIcon = ({
+  size = 16,
+  className = defaultTailwindCSS,
+}: IconProps) => {
+  return (
+    <div
+      style={{ width: `${size}px`, height: `${size}px` }}
+      className={`w-[${size}px] h-[${size}px] ` + className}
+    >
+      <Image src="/Gmail.png" alt="Logo" width="96" height="96" />
     </div>
   );
 };

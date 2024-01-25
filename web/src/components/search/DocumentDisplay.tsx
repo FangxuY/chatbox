@@ -1,11 +1,12 @@
 import { DanswerDocument } from "@/lib/search/interfaces";
 import { DocumentFeedbackBlock } from "./DocumentFeedbackBlock";
-import { getSourceIcon } from "../source";
 import { useState } from "react";
 import { PopupSpec } from "../admin/connectors/Popup";
 import { HoverPopup } from "@/components/HoverPopup";
 import { DocumentUpdatedAtBadge } from "./DocumentUpdatedAtBadge";
-import { FiCrosshair, FiInfo, FiRadio } from "react-icons/fi";
+import { FiInfo, FiRadio, FiTag } from "react-icons/fi";
+import { SourceIcon } from "../SourceIcon";
+import { MetadataBadge } from "../MetadataBadge";
 
 export const buildDocumentSummaryDisplay = (
   matchHighlights: string[],
@@ -69,7 +70,7 @@ export const buildDocumentSummaryDisplay = (
             finalJSX[finalJSX.length - 1] = finalJSX[finalJSX.length - 1] + " ";
           }
           finalJSX.push(
-            <b key={index} className="text-gray-200 bg-pink-950">
+            <b key={index} className="text-default bg-highlight-text">
               {currentText}
             </b>
           );
@@ -93,7 +94,7 @@ export const buildDocumentSummaryDisplay = (
         finalJSX[finalJSX.length - 1] = finalJSX[finalJSX.length - 1] + " ";
       }
       finalJSX.push(
-        <b key={sections.length} className="text-gray-200 bg-pink-950">
+        <b key={sections.length} className="text-default bg-highlight-text">
           {currentText}
         </b>
       );
@@ -103,6 +104,32 @@ export const buildDocumentSummaryDisplay = (
   }
   return finalJSX;
 };
+
+export function DocumentMetadataBlock({
+  document,
+}: {
+  document: DanswerDocument;
+}) {
+  return (
+    <div className="flex flex-wrap gap-1">
+      {document.updated_at && (
+        <div className="pr-1">
+          <DocumentUpdatedAtBadge updatedAt={document.updated_at} />
+        </div>
+      )}
+      {Object.entries(document.metadata).length > 0 && (
+        <>
+          <div className="pl-1 border-l border-border" />
+          {Object.entries(document.metadata).map(([key, value]) => {
+            return (
+              <MetadataBadge key={key} icon={FiTag} value={`${key}=${value}`} />
+            );
+          })}
+        </>
+      )}
+    </div>
+  );
+}
 
 interface DocumentDisplayProps {
   document: DanswerDocument;
@@ -127,7 +154,7 @@ export const DocumentDisplay = ({
   return (
     <div
       key={document.semantic_identifier}
-      className="text-sm border-b border-gray-800 mb-3"
+      className="text-sm border-b border-border mb-3"
       onMouseEnter={() => {
         setIsHovered(true);
       }}
@@ -163,8 +190,8 @@ export const DocumentDisplay = ({
             <div
               className={`
                 text-xs
-                text-gray-200
-                bg-gray-800
+                text-emphasis
+                bg-hover
                 rounded
                 p-0.5
                 w-fit
@@ -179,15 +206,15 @@ export const DocumentDisplay = ({
         )}
         <a
           className={
-            "rounded-lg flex font-bold " +
+            "rounded-lg flex font-bold text-link max-w-full " +
             (document.link ? "" : "pointer-events-none")
           }
           href={document.link}
           target="_blank"
           rel="noopener noreferrer"
         >
-          {getSourceIcon(document.source_type, 22)}
-          <p className="truncate break-all ml-2 my-auto text-base">
+          <SourceIcon sourceType={document.source_type} iconSize={22} />
+          <p className="truncate text-wrap break-all ml-2 my-auto text-base max-w-full">
             {document.semantic_identifier || document.document_id}
           </p>
         </a>
@@ -201,10 +228,10 @@ export const DocumentDisplay = ({
           )}
         </div>
       </div>
-      {document.updated_at && (
-        <DocumentUpdatedAtBadge updatedAt={document.updated_at} />
-      )}
-      <p className="pl-1 pt-2 pb-3 text-gray-200 break-words">
+      <div className="mt-1">
+        <DocumentMetadataBlock document={document} />
+      </div>
+      <p className="pl-1 pt-2 pb-3 break-words">
         {buildDocumentSummaryDisplay(document.match_highlights, document.blurb)}
       </p>
     </div>

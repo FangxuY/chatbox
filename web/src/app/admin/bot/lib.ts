@@ -1,12 +1,16 @@
 import { ChannelConfig, SlackBotTokens } from "@/lib/types";
+import { Persona } from "../personas/interfaces";
 
 interface SlackBotConfigCreationRequest {
   document_sets: number[];
+  persona_id: number | null;
   channel_names: string[];
   answer_validity_check_enabled: boolean;
   questionmark_prefilter_enabled: boolean;
   respond_tag_only: boolean;
   respond_team_member_list: string[];
+  follow_up_tags?: string[];
+  usePersona: boolean;
 }
 
 const buildFiltersFromCreationRequest = (
@@ -29,8 +33,11 @@ const buildRequestBodyFromCreationRequest = (
     channel_names: creationRequest.channel_names,
     respond_tag_only: creationRequest.respond_tag_only,
     respond_team_member_list: creationRequest.respond_team_member_list,
-    document_sets: creationRequest.document_sets,
     answer_filters: buildFiltersFromCreationRequest(creationRequest),
+    follow_up_tags: creationRequest.follow_up_tags?.filter((tag) => tag !== ""),
+    ...(creationRequest.usePersona
+      ? { persona_id: creationRequest.persona_id }
+      : { document_sets: creationRequest.document_sets }),
   });
 };
 
@@ -77,3 +84,7 @@ export const setSlackBotTokens = async (slackBotTokens: SlackBotTokens) => {
     body: JSON.stringify(slackBotTokens),
   });
 };
+
+export function isPersonaASlackBotPersona(persona: Persona) {
+  return persona.name.startsWith("__slack_bot_persona__");
+}

@@ -9,13 +9,16 @@ SOURCE_LINKS = "source_links"
 SOURCE_LINK = "link"
 SEMANTIC_IDENTIFIER = "semantic_identifier"
 TITLE = "title"
+SKIP_TITLE_EMBEDDING = "skip_title"
 SECTION_CONTINUATION = "section_continuation"
 EMBEDDINGS = "embeddings"
+TITLE_EMBEDDING = "title_embedding"
 ALLOWED_USERS = "allowed_users"
 ACCESS_CONTROL_LIST = "access_control_list"
 DOCUMENT_SETS = "document_sets"
 TIME_FILTER = "time_filter"
 METADATA = "metadata"
+METADATA_LIST = "metadata_list"
 MATCH_HIGHLIGHTS = "match_highlights"
 # stored in the `metadata` of a chunk. Used to signify that this chunk should
 # not be used for QA. For example, Google Drive file types which can't be parsed
@@ -38,6 +41,20 @@ SESSION_KEY = "session"
 QUERY_EVENT_ID = "query_event_id"
 LLM_CHUNKS = "llm_chunks"
 
+# For chunking/processing chunks
+TITLE_SEPARATOR = "\n\r\n"
+SECTION_SEPARATOR = "\n\n"
+# For combining attributes, doesn't have to be unique/perfect to work
+INDEX_SEPARATOR = "==="
+
+
+# Messages
+DISABLED_GEN_AI_MSG = (
+    "Your System Admin has disabled the Generative AI functionalities of Danswer.\n"
+    "Please contact them if you wish to have this enabled.\n"
+    "You can still use Danswer as a search engine."
+)
+
 
 class DocumentSource(str, Enum):
     # Special case, document passed in via Danswer APIs without specifying a source type
@@ -45,8 +62,10 @@ class DocumentSource(str, Enum):
     SLACK = "slack"
     WEB = "web"
     GOOGLE_DRIVE = "google_drive"
+    GMAIL = "gmail"
     REQUESTTRACKER = "requesttracker"
     GITHUB = "github"
+    GITLAB = "gitlab"
     GURU = "guru"
     BOOKSTACK = "bookstack"
     CONFLUENCE = "confluence"
@@ -62,6 +81,7 @@ class DocumentSource(str, Enum):
     GONG = "gong"
     GOOGLE_SITES = "google_sites"
     ZENDESK = "zendesk"
+    LOOPIO = "loopio"
 
 
 class DocumentIndexType(str, Enum):
@@ -77,11 +97,6 @@ class AuthType(str, Enum):
     SAML = "saml"
 
 
-class QAFeedbackType(str, Enum):
-    LIKE = "like"  # User likes the answer, used for metrics
-    DISLIKE = "dislike"  # User dislikes the answer, used for metrics
-
-
 class SearchFeedbackType(str, Enum):
     ENDORSE = "endorse"  # boost this document for all future queries
     REJECT = "reject"  # down-boost this document for all future queries
@@ -91,7 +106,7 @@ class SearchFeedbackType(str, Enum):
 
 class MessageType(str, Enum):
     # Using OpenAI standards, Langchain equivalent shown in comment
+    # System message is always constructed on the fly, not saved
     SYSTEM = "system"  # SystemMessage
     USER = "user"  # HumanMessage
     ASSISTANT = "assistant"  # AIMessage
-    DANSWER = "danswer"  # FunctionMessage
