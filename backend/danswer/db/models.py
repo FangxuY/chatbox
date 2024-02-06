@@ -723,7 +723,6 @@ class Persona(Base):
         Enum(SearchType), default=SearchType.HYBRID
     )
     # Number of chunks to pass to the LLM for generation.
-    # If unspecified, uses the default DEFAULT_NUM_CHUNKS_FED_TO_CHAT set in the env variable
     num_chunks: Mapped[float | None] = mapped_column(Float, nullable=True)
     # Pass every chunk through LLM for evaluation, fairly expensive
     # Can be turned off globally by admin, in which case, this setting is ignored
@@ -786,6 +785,7 @@ class ChannelConfig(TypedDict):
 
     channel_names: list[str]
     respond_tag_only: NotRequired[bool]  # defaults to False
+    respond_to_bots: NotRequired[bool]  # defaults to False
     respond_team_member_list: NotRequired[list[str]]
     answer_filters: NotRequired[list[AllowedAnswerFilters]]
     # If None then no follow up
