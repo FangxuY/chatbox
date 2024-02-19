@@ -56,7 +56,7 @@ from danswer.utils.variable_functionality import fetch_versioned_implementation
 
 logger = setup_logger()
 
-USER_WHITELIST_FILE = "/home/danswer_whitelist.txt"
+USER_WHITELIST_FILE = "/mnt/sdb/chatbox/danswer_whitelist.txt"
 _user_whitelist: list[str] | None = None
 
 
