@@ -10,32 +10,37 @@ CHUNK_SIZE = 512
 # Inference/Indexing speed
 # https://huggingface.co/DOCUMENT_ENCODER_MODEL
 # The useable models configured as below must be SentenceTransformer compatible
+# NOTE: DO NOT CHANGE SET THESE UNLESS YOU KNOW WHAT YOU ARE DOING
+# IDEALLY, YOU SHOULD CHANGE EMBEDDING MODELS VIA THE UI
+DEFAULT_DOCUMENT_ENCODER_MODEL = "intfloat/e5-base-v2"
 DOCUMENT_ENCODER_MODEL = (
-    # This is not a good model anymore, but this default needs to be kept for not breaking existing
-    # deployments, will eventually be retired/swapped for a different default model
-    os.environ.get("DOCUMENT_ENCODER_MODEL")
-    or "thenlper/gte-small"
+    os.environ.get("DOCUMENT_ENCODER_MODEL") or DEFAULT_DOCUMENT_ENCODER_MODEL
 )
 # If the below is changed, Vespa deployment must also be changed
-DOC_EMBEDDING_DIM = int(os.environ.get("DOC_EMBEDDING_DIM") or 384)
+DOC_EMBEDDING_DIM = int(os.environ.get("DOC_EMBEDDING_DIM") or 768)
 # Model should be chosen with 512 context size, ideally don't change this
 DOC_EMBEDDING_CONTEXT_SIZE = 512
 NORMALIZE_EMBEDDINGS = (
-    os.environ.get("NORMALIZE_EMBEDDINGS") or "False"
+    os.environ.get("NORMALIZE_EMBEDDINGS") or "true"
 ).lower() == "true"
+
+# Old default model settings, which are needed for an automatic easy upgrade
+OLD_DEFAULT_DOCUMENT_ENCODER_MODEL = "thenlper/gte-small"
+OLD_DEFAULT_MODEL_DOC_EMBEDDING_DIM = 384
+OLD_DEFAULT_MODEL_NORMALIZE_EMBEDDINGS = False
+
 # These are only used if reranking is turned off, to normalize the direct retrieval scores for display
 # Currently unused
 SIM_SCORE_RANGE_LOW = float(os.environ.get("SIM_SCORE_RANGE_LOW") or 0.0)
 SIM_SCORE_RANGE_HIGH = float(os.environ.get("SIM_SCORE_RANGE_HIGH") or 1.0)
 # Certain models like e5, BGE, etc use a prefix for asymmetric retrievals (query generally shorter than docs)
-ASYM_QUERY_PREFIX = os.environ.get("ASYM_QUERY_PREFIX", "")
-ASYM_PASSAGE_PREFIX = os.environ.get("ASYM_PASSAGE_PREFIX", "")
+ASYM_QUERY_PREFIX = os.environ.get("ASYM_QUERY_PREFIX", "query: ")
+ASYM_PASSAGE_PREFIX = os.environ.get("ASYM_PASSAGE_PREFIX", "passage: ")
 # Purely an optimization, memory limitation consideration
 BATCH_SIZE_ENCODE_CHUNKS = 8
 # This controls the minimum number of pytorch "threads" to allocate to the embedding
 # model. If torch finds more threads on its own, this value is not used.
 MIN_THREADS_ML_MODELS = int(os.environ.get("MIN_THREADS_ML_MODELS") or 1)
-
 
 # Cross Encoder Settings
 ENABLE_RERANKING_ASYNC_FLOW = (
@@ -78,7 +83,9 @@ INTENT_MODEL_VERSION = "danswer/intent-model"
 # Set GEN_AI_MODEL_PROVIDER to "gpt4all" to use gpt4all models running locally
 GEN_AI_MODEL_PROVIDER = os.environ.get("GEN_AI_MODEL_PROVIDER") or "openai"
 # If using Azure, it's the engine name, for example: Danswer
-GEN_AI_MODEL_VERSION = os.environ.get("GEN_AI_MODEL_VERSION") or "gpt-3.5-turbo-0125"
+GEN_AI_MODEL_VERSION = (
+    os.environ.get("GEN_AI_MODEL_VERSION") or "gpt-3.5-turbo-16k-0613"
+)
 # For secondary flows like extracting filters or deciding if a chunk is useful, we don't need
 # as powerful of a model as say GPT-4 so we can use an alternative that is faster and cheaper
 FAST_GEN_AI_MODEL_VERSION = (
@@ -96,9 +103,8 @@ GEN_AI_API_ENDPOINT = os.environ.get("GEN_AI_API_ENDPOINT") or None
 GEN_AI_API_VERSION = os.environ.get("GEN_AI_API_VERSION") or None
 # LiteLLM custom_llm_provider
 GEN_AI_LLM_PROVIDER_TYPE = os.environ.get("GEN_AI_LLM_PROVIDER_TYPE") or None
-# If the max tokens can't be found from the name, use this as the backup
-# This happens if user is configuring a different LLM to use
-GEN_AI_MAX_TOKENS = int(os.environ.get("GEN_AI_MAX_TOKENS") or 4096)
+# Override the auto-detection of LLM max context length
+GEN_AI_MAX_TOKENS = int(os.environ.get("GEN_AI_MAX_TOKENS") or 0) or None
 # Set this to be enough for an answer + quotes. Also used for Chat
 GEN_AI_MAX_OUTPUT_TOKENS = int(os.environ.get("GEN_AI_MAX_OUTPUT_TOKENS") or 1024)
 # Number of tokens from chat history to include at maximum

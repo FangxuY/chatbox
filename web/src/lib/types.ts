@@ -91,6 +91,7 @@ export interface GoogleDriveConfig {
   folder_paths?: string[];
   include_shared?: boolean;
   follow_shortcuts?: boolean;
+  only_org_public?: boolean;
 }
 
 export interface GmailConfig {}
@@ -166,6 +167,7 @@ export interface IndexAttemptSnapshot {
   new_docs_indexed: number;
   total_docs_indexed: number;
   error_msg: string | null;
+  full_exception_trace: string | null;
   time_started: string | null;
   time_updated: string;
 }
@@ -187,6 +189,12 @@ export interface ConnectorIndexingStatus<
   latest_index_attempt: IndexAttemptSnapshot | null;
   deletion_attempt: DeletionAttemptSnapshot | null;
   is_deletable: boolean;
+}
+
+export interface CCPairBasicInfo {
+  docs_indexed: number;
+  has_successful_run: boolean;
+  source: ValidSources;
 }
 
 // CREDENTIALS
