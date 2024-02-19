@@ -53,7 +53,7 @@ personas:
 
 
   - id: 2
-    name: "Paraphrase"
+    name: "Paraphrase Assistant"
     description: >
       Assistant that is heavily constrained and only provides exact quotes from Connected Sources.
     prompts:
