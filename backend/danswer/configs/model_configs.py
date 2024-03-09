@@ -3,7 +3,6 @@ import os
 #####
 # Embedding/Reranking Model Configs
 #####
-CHUNK_SIZE = 512
 # Important considerations when choosing models
 # Max tokens count needs to be high considering use case (at least 512)
 # Models used must be MIT or Apache license
@@ -83,14 +82,11 @@ INTENT_MODEL_VERSION = "danswer/intent-model"
 # Set GEN_AI_MODEL_PROVIDER to "gpt4all" to use gpt4all models running locally
 GEN_AI_MODEL_PROVIDER = os.environ.get("GEN_AI_MODEL_PROVIDER") or "openai"
 # If using Azure, it's the engine name, for example: Danswer
-GEN_AI_MODEL_VERSION = (
-    os.environ.get("GEN_AI_MODEL_VERSION") or "gpt-3.5-turbo-16k-0613"
-)
+GEN_AI_MODEL_VERSION = os.environ.get("GEN_AI_MODEL_VERSION")
+
 # For secondary flows like extracting filters or deciding if a chunk is useful, we don't need
 # as powerful of a model as say GPT-4 so we can use an alternative that is faster and cheaper
-FAST_GEN_AI_MODEL_VERSION = (
-    os.environ.get("FAST_GEN_AI_MODEL_VERSION") or GEN_AI_MODEL_VERSION
-)
+FAST_GEN_AI_MODEL_VERSION = os.environ.get("FAST_GEN_AI_MODEL_VERSION")
 
 # If the Generative AI model requires an API key for access, otherwise can leave blank
 GEN_AI_API_KEY = (
