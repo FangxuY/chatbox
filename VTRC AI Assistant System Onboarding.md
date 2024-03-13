@@ -1,4 +1,4 @@
-<img width="1428" alt="image" src="https://github.com/FangxuY/chatbox/assets/48797491/78f307aa-5fb5-4a82-912c-ce6412955e25"># VTRC AI Assistant System Onboarding
+# VTRC AI Assistant System Onboarding
 
 ## Getting an Instance [AWS]
 
