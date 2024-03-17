@@ -39,25 +39,28 @@ export function ChatDocumentDisplay({
     <div key={document.semantic_identifier} className="text-sm px-3">
       <div className="flex relative w-full overflow-y-visible">
         <a
-          className={
-            "rounded-lg flex font-bold flex-shrink truncate " +
-            (document.link ? "" : "pointer-events-none")
-          }
-          href={document.link}
-          target="_blank"
-          rel="noopener noreferrer"
+            className={
+                "rounded-lg flex font-bold flex-shrink truncate " +
+                (document.link ? "" : "pointer-events-none")
+            }
+            href={document.link}
+            target="_blank"
+            rel="noopener noreferrer"
         >
-          <SourceIcon sourceType={document.source_type} iconSize={18} />
-          <p className="overflow-hidden text-ellipsis mx-2 my-auto text-sm ">
+          <SourceIcon sourceType={document.source_type} iconSize={18}/>
+          <a
+              href={`https://vtrc.virginia.gov/reports/all-reports/${(document.semantic_identifier || document.document_id).split('-')[0]}`}
+              className="overflow-hidden text-ellipsis mx-2 my-auto text-sm"
+          >
             {document.semantic_identifier || document.document_id}
-          </p>
+          </a>
         </a>
         {document.score !== null && (
-          <div className="my-auto">
-            {isAIPick && (
-              <div className="w-4 h-4 my-auto mr-1 flex flex-col">
-                <HoverPopup
-                  mainContent={<FiRadio className="text-gray-500 my-auto" />}
+            <div className="my-auto">
+              {isAIPick && (
+                  <div className="w-4 h-4 my-auto mr-1 flex flex-col">
+                    <HoverPopup
+                        mainContent={<FiRadio className="text-gray-500 my-auto" />}
                   popupContent={
                     <div className="text-xs text-gray-300 w-36 flex">
                       <div className="flex mx-auto">
