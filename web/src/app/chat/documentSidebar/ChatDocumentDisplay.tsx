@@ -40,11 +40,10 @@ export function ChatDocumentDisplay({
         <div className="flex relative w-full overflow-y-visible">
             <a
                 className={
-                    "rounded-lg flex font-bold flex-shrink truncate " +
-                    (document.link ? "" : "pointer-events-none")
+                    "rounded-lg flex font-bold flex-shrink truncate"
                 }
                 href={`https://vtrc.virginia.gov/reports/all-reports/${
-                    (document.semantic_identifier || document.document_id).split("-")[0]
+                    (document.semantic_identifier || document.document_id).split(".")[0]
                 }`}
                 target="_blank"
                 rel="noopener noreferrer"
