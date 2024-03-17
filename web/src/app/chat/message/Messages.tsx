@@ -174,7 +174,7 @@ export const AIMessage = ({
                       return (
                           <a
                             key={document.document_id}
-                            href={`https://vtrc.virginia.gov/reports/all-reports/${(document.document_id).split(".")[0]}`}
+                            href={`https://vtrc.virginia.gov/reports/all-reports/${document.document_id.match(/(\d+-\w+)\.?/)?.[1] || ''}`}
                             target="_blank"
                             className="cursor-pointer hover:bg-hover"
                           >
