@@ -42,9 +42,12 @@ export function ChatDocumentDisplay({
                 className={
                     "rounded-lg flex font-bold flex-shrink truncate"
                 }
-                href={`https://vtrc.virginia.gov/reports/all-reports/${
-                    (document.semantic_identifier || document.document_id).split(".")[0]
-                }`}
+                href={
+                    document.semantic_identifier &&
+                    document.semantic_identifier.startsWith("Chapter")
+                        ? "https://www.vdot.virginia.gov/doing-business/technical-guidance-and-support/technical-guidance-documents/drainage-manual/"
+                        : `https://vtrc.virginia.gov/reports/all-reports/${(document.semantic_identifier || '').split(".")[0]}`
+                }
                 target="_blank"
                 rel="noopener noreferrer"
             >
@@ -116,7 +119,7 @@ export function ChatDocumentDisplay({
             setPopup={setPopup}
           />
         )} */}
-      </div>
+        </div>
     </div>
   );
 }

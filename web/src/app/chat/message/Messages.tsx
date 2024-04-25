@@ -176,8 +176,13 @@ export const AIMessage = ({
                       );
                       return (
                           <a
-                            key={document.document_id}
-                            href={`https://vtrc.virginia.gov/reports/all-reports/${document.document_id.match(/(\d+-\w+)\.?/)?.[1] || ''}`}
+                            key={document.semantic_identifier}
+                            href={
+                                document.semantic_identifier &&
+                                document.semantic_identifier.startsWith("Chapter")
+                                    ? "https://www.vdot.virginia.gov/doing-business/technical-guidance-and-support/technical-guidance-documents/drainage-manual/"
+                                    : `https://vtrc.virginia.gov/reports/all-reports/${(document.semantic_identifier || '').split(".")[0]}`
+                            }
                             target="_blank"
                             className="cursor-pointer hover:bg-hover"
                           >
