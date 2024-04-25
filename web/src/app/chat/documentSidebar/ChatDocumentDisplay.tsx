@@ -37,44 +37,45 @@ export function ChatDocumentDisplay({
 
   return (
     <div key={document.semantic_identifier} className="text-sm px-3">
-      <div className="flex relative w-full overflow-y-visible">
-        <a
-          className={
-            "rounded-lg flex font-bold flex-shrink truncate " +
-            (document.link ? "" : "pointer-events-none")
-          }
-          href={document.link}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <SourceIcon sourceType={document.source_type} iconSize={18} />
-          <p className="overflow-hidden text-ellipsis mx-2 my-auto text-sm ">
-            {document.semantic_identifier || document.document_id}
-          </p>
-        </a>
-        {document.score !== null && (
-          <div className="my-auto">
-            {isAIPick && (
-              <div className="w-4 h-4 my-auto mr-1 flex flex-col">
-                <HoverPopup
-                  mainContent={<FiRadio className="text-gray-500 my-auto" />}
-                  popupContent={
-                    <div className="text-xs text-gray-300 w-36 flex">
-                      <div className="flex mx-auto">
-                        <div className="w-3 h-3 flex flex-col my-auto mr-1">
-                          <FiInfo className="my-auto" />
+        <div className="flex relative w-full overflow-y-visible">
+            <a
+                className={
+                    "rounded-lg flex font-bold flex-shrink truncate"
+                }
+                href={`https://vtrc.virginia.gov/reports/all-reports/${
+                    (document.semantic_identifier || document.document_id).split(".")[0]
+                }`}
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                <SourceIcon sourceType={document.source_type} iconSize={18}/>
+                <p className="overflow-hidden text-ellipsis mx-2 my-auto text-sm ">
+                    {document.semantic_identifier || document.document_id}
+                </p>
+            </a>
+            {document.score !== null && (
+                <div className="my-auto">
+                    {isAIPick && (
+                        <div className="w-4 h-4 my-auto mr-1 flex flex-col">
+                            <HoverPopup
+                                mainContent={<FiRadio className="text-gray-500 my-auto"/>}
+                                popupContent={
+                                    <div className="text-xs text-gray-300 w-36 flex">
+                                        <div className="flex mx-auto">
+                                            <div className="w-3 h-3 flex flex-col my-auto mr-1">
+                                                <FiInfo className="my-auto"/>
+                                            </div>
+                                            <div className="my-auto">The AI liked this doc!</div>
+                                        </div>
+                                    </div>
+                                }
+                                direction="bottom"
+                                style="dark"
+                            />
                         </div>
-                        <div className="my-auto">The AI liked this doc!</div>
-                      </div>
-                    </div>
-                  }
-                  direction="bottom"
-                  style="dark"
-                />
-              </div>
-            )}
-            <div
-              className={`
+                    )}
+                    <div
+                        className={`
                 text-xs
                 text-emphasis
                 bg-hover
@@ -85,28 +86,28 @@ export function ChatDocumentDisplay({
                 select-none
                 my-auto
                 mr-2`}
-            >
-              {Math.abs(document.score).toFixed(2)}
-            </div>
-          </div>
-        )}
+                    >
+                        {Math.abs(document.score).toFixed(2)}
+                    </div>
+                </div>
+            )}
 
-        <DocumentSelector
-          isSelected={isSelected}
-          handleSelect={() => handleSelect(document.document_id)}
-          isDisabled={tokenLimitReached && !isSelected}
-        />
-      </div>
-      <div>
-        <div className="mt-1">
-          <DocumentMetadataBlock document={document} />
+            <DocumentSelector
+                isSelected={isSelected}
+                handleSelect={() => handleSelect(document.document_id)}
+                isDisabled={tokenLimitReached && !isSelected}
+            />
         </div>
-      </div>
-      <p className="pl-1 pt-2 pb-1 break-words">
-        {buildDocumentSummaryDisplay(document.match_highlights, document.blurb)}
-      </p>
-      <div className="mb-2">
-        {/* 
+        <div>
+            <div className="mt-1">
+                <DocumentMetadataBlock document={document}/>
+            </div>
+        </div>
+        <p className="pl-1 pt-2 pb-1 break-words">
+            {buildDocumentSummaryDisplay(document.match_highlights, document.blurb)}
+        </p>
+        <div className="mb-2">
+            {/*
         // TODO: find a way to include this
         {queryEventId && (
           <DocumentFeedbackBlock

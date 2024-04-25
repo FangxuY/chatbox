@@ -56,7 +56,7 @@ from danswer.utils.variable_functionality import fetch_versioned_implementation
 
 logger = setup_logger()
 
-USER_WHITELIST_FILE = "/home/danswer_whitelist.txt"
+USER_WHITELIST_FILE = "/mnt/sdb/chatbox/danswer_whitelist.txt"
 _user_whitelist: list[str] | None = None
 
 
@@ -114,7 +114,7 @@ def send_user_verification_email(
     mail_from: str = EMAIL_FROM,
 ) -> None:
     msg = MIMEMultipart()
-    msg["Subject"] = "Danswer Email Verification"
+    msg["Subject"] = "VTRC AI Assistant Email Verification"
     msg["To"] = user_email
     if mail_from:
         msg["From"] = mail_from

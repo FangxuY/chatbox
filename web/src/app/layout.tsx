@@ -10,8 +10,8 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: "Danswer",
-  description: "Question answering for your documents",
+  title: "VTRC Final Reports AI Assistant",
+  description: "Question answering for VTRC documents",
 };
 
 export const dynamic = "force-dynamic";

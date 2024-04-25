@@ -73,7 +73,7 @@ export const AIMessage = ({
             </div>
 
             <div className="font-bold text-emphasis ml-2 my-auto">
-              {personaName || "Danswer"}
+              {personaName || "VTRC AI Assistant"}
             </div>
 
             {query === undefined &&
@@ -174,27 +174,16 @@ export const AIMessage = ({
                           [{citationKey}] {document!.semantic_identifier}
                         </div>
                       );
-                      if (document.link) {
-                        return (
+                      return (
                           <a
                             key={document.document_id}
-                            href={document.link}
+                            href={`https://vtrc.virginia.gov/reports/all-reports/${document.document_id.match(/(\d+-\w+)\.?/)?.[1] || ''}`}
                             target="_blank"
                             className="cursor-pointer hover:bg-hover"
                           >
                             {display}
                           </a>
                         );
-                      } else {
-                        return (
-                          <div
-                            key={document.document_id}
-                            className="cursor-default"
-                          >
-                            {display}
-                          </div>
-                        );
-                      }
                     })}
                 </div>
               </div>
